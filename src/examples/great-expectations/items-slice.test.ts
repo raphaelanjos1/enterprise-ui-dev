@@ -1,86 +1,179 @@
-import reducer, {
-  add,
-  remove,
-  toggle,
-  markAllAsUnpacked,
-  update,
-} from './items-slice';
+import { describe, expect, it } from 'vitest';
+import { createPerson, Person } from '$lib/person';
+import { KanbanBoard } from '$lib/kanban-board';
 
-it('returns an empty array as the initial state', () => {
-  expect(reducer(undefined, { type: 'noop' })).toEqual([]);
+/**
+ * toBe: https://vitest.dev/api/expect.html#tobe
+ * toBeCloseTo: https://vitest.dev/api/expect.html#tobecloseto
+ * toBeInstanceOf: https://vitest.dev/api/expect.html#tobeinstanceof
+ * toBeUndefined: https://vitest.dev/api/expect.html#tobeundefined
+ * toContain: https://vitest.dev/api/expect.html#tocontain
+ * toThrow: https://vitest.dev/api/expect.html#tothrow
+ * toThrowError: https://vitest.dev/api/expect.html#tothrowerror
+ */
+
+it(
+  'should pass if the two numbers would add up correctly in a language other than JavaScript',
+  () => {
+    expect((0.2 + 0.1)).toBeCloseTo(0.3, 5);
+  },
+);
+
+describe('createPerson', () => {
+  it('should create an instance of a person', () => {
+    const person = createPerson('Ada Lovelace');
+    expect(person).toBeInstanceOf(Person)
+    expect.hasAssertions();
+    // Verify that person is an instance of a Person.
+  });
 });
 
-it.todo('supports adding an item with the correct name', () => {
-  expect.hasAssertions();
-  const result = reducer([], add({ name: 'iPhone' }));
-});
+describe('Kanban Board', () => {
+  it('should include "Backlog" in board.statuses', () => {
+    const board = new KanbanBoard('Things to Do');
+    board.addStatus('Backlog')
+    expect(board.statuses).toContain('Backlog');
+    // Verify that board.statuses contains "Backlog".
+  });
 
-it.todo('prefixes ids with "item-"', () => {
-  expect.hasAssertions();
-  const result = reducer([], add({ name: 'iPhone' }));
-});
+  it('should *not* include "Bogus" in board.statuses', () => {
+    const board = new KanbanBoard('Things to Do');
+    expect(board.statuses).not.toContain('Bogus')
+    expect.hasAssertions();
+    // Verify that board.statuses does not contain "Bogus".
+  });
 
-it.todo('defaults new items to a packed status of false', () => {
-  expect.hasAssertions();
-  const result = reducer([], add({ name: 'iPhone' }));
-});
-
-it.todo('supports removing an item', () => {
-  expect.hasAssertions();
-  const state = [
-    {
-      id: '1',
-      name: 'iPhone',
-      packed: false,
+  it(
+    'should include an added status in board.statuses using #addStatus',
+    () => {
+      const board = new KanbanBoard('Things to Do');
+      const toAddStatus = 'Test'
+      board.addStatus(toAddStatus)
+      expect.hasAssertions();
+      expect(board.statuses).toContain(toAddStatus);
+      // Use board.addStatus to add a status.
+      // Verify that the new status is—in fact—now in board.statuses.
     },
-  ];
-
-  const result = reducer(state, remove({ id: '1' }));
-});
-
-it.todo('supports toggling an item', () => {
-  expect.hasAssertions();
-  const state = [
-    {
-      id: '1',
-      name: 'iPhone',
-      packed: false,
-    },
-  ];
-
-  const result = reducer(state, toggle({ id: '1' }));
-});
-
-it.todo('supports updating an item', () => {
-  expect.hasAssertions();
-  const state = [
-    {
-      id: '1',
-      name: 'iPhone',
-      packed: false,
-    },
-  ];
-
-  const result = reducer(
-    state,
-    update({ id: '1', name: 'Samsung Galaxy S23' }),
   );
+
+  it('should remove a status using #removeStatus', () => {
+    const board = new KanbanBoard('Things to Do');
+    expect.hasAssertions();
+    // Use board.removeStatus to remove a status.
+
+    // You can be clever or you can just assume "Backlog" is in board.statuses
+    // by default.
+    board.removeStatus('Backlog')
+    expect(board.statuses).not.toContain('Backlog')
+    // Verify that the status is no longer in in board.statuses.
+  });
 });
 
-it.todo('supports marking all items as unpacked', () => {
-  expect.hasAssertions();
-  const state = [
-    {
-      id: '1',
-      name: 'iPhone',
-      packed: true,
-    },
-    {
-      id: '2',
-      name: 'iPhone Charger',
-      packed: true,
-    },
-  ];
+describe('Person', () => {
+  it('will create a person with a first name', () => {
+    const person = new Person('Madonna');
+    expect.hasAssertions();
+    expect(person.firstName).toEqual('Madonna')
+    // Verify that person.firstName is correct.
+  });
 
-  const result = reducer(state, markAllAsUnpacked());
+  it('will create a person with a first and last name', () => {
+    const person = new Person('Madonna Cicone');
+    expect.hasAssertions();
+    expect(person.fullName).toEqual('Madonna Cicone');
+    // Verify that person.lastName is correct.
+  });
+
+  it('will create a person with a first, middle, and last name', () => {
+    const person = new Person('Madonna Louise Cicone');
+    expect(person.fullName).toEqual('Madonna Louise Cicone');
+    expect.hasAssertions();
+    // Verify that person.middleName is correct.
+  });
+
+  it('will throw if you provide an empty string', () => {
+    const fn = () => {
+      new Person('');
+    };
+
+    expect.hasAssertions();
+    expect(() => fn()).toThrow();
+    // expect(fn()).toThrowError('Name must not be empty');
+    // Verify that function above throws.
+  });
+
+  it(
+    'will throw a specific error message if you provide an empty string',
+    () => {
+      const errorMessage = 'fullName cannot be an empty string';
+
+      const fn = () => {
+        new Person('');
+      };
+
+      expect.hasAssertions();
+      expect(() => fn()).toThrowError(errorMessage);
+      // Verify that function above throws the error message above.
+    },
+  );
+
+  it.todo('will add a friend', () => {
+    const john = new Person('John Lennon');
+    const paul = new Person('Paul McCartney');
+
+    john.addFriend(paul);
+
+    expect.hasAssertions();
+
+    // Verify that john.friends contains paul.
+  });
+
+  it.todo('will mutually add a friend', () => {
+    const john = new Person('John Lennon');
+    const paul = new Person('Paul McCartney');
+
+    john.addFriend(paul);
+
+    expect.hasAssertions();
+
+    // Verify that paul.friends contains john.
+  });
+
+  it.todo('will remove a friend', () => {
+    const john = new Person('John Lennon');
+    const paul = new Person('Paul McCartney');
+
+    john.addFriend(paul);
+    john.removeFriend(paul);
+
+    expect.hasAssertions();
+
+    // Verify that john.friends does not inclide paul.
+  });
+
+  it.todo('will mutually remove friends', () => {
+    const john = new Person('John Lennon');
+    const paul = new Person('Paul McCartney');
+
+    john.addFriend(paul);
+    john.removeFriend(paul);
+
+    expect.hasAssertions();
+
+    // Verify that paul.friends does not include john.
+  });
+});
+
+const explode = () => {
+  throw new Error('Something went terribly wrong');
+};
+
+describe('explode', () => {
+  it.todo('should throw an error', () => {
+    explode();
+  });
+
+  it.todo('should throw a specific error containing "terribly wrong"', () => {
+    explode();
+  });
 });
